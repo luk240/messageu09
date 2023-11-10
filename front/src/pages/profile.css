@@ -1,0 +1,18 @@
+header {
+	display: flex;
+	align-items: center;
+	column-gap: 1rem;
+	height: 45px;
+	padding: 0 1rem;
+	background: #2f304f;
+}
+header a {color: #eee;}
+header :last-child {
+	margin-left: auto;
+	background: #eee;
+}
+#profile {
+	transform: none;
+}
+#profile button {margin-top: 1rem;}
+#profile .form-ok {background: #31da5b;}

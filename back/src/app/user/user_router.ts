@@ -2,7 +2,7 @@ import { Router } from "express";
 import { makeUser } from "./user";
 import USER from "./user_dao";
 import handleErr from "../utils/error";
-import { authenticateTok, bodyIsString, valLogin, valReg } from "../middlewares";
+import { authenticateTok, bodyIsString, valLogin, valReg, valUpdate } from "../middlewares";
 import { setCookie } from "../utils/cookie";
 import { genToken } from "../utils/token";
 
@@ -36,17 +36,18 @@ userRouter.post("/login", bodyIsString, valLogin, async (req, res) => {
 });
 
 userRouter.get("/logout", (_, res) => {
-		try {
-			res.cookie("tok", "", {expires: new Date(0)});
-			res.sendStatus(200);
-		}catch(e) {
-			res.status(500).json({error: handleErr(e)});
-		}
+	try {
+		res.cookie("tok", "", {expires: new Date(0)});
+		res.sendStatus(200);
+	}catch(e) {
+		res.status(500).json({error: handleErr(e)});
+	}
 });
 
 /* Auth routes */
+userRouter.use(authenticateTok);
 
-userRouter.get("/auth", authenticateTok, async (req, res) => {
+userRouter.get("/auth", async (req, res) => {
 	try{
 		const user = await USER.getUser(req.tok.id); // uneeded?
 		res.status(200).send(user);
@@ -55,7 +56,16 @@ userRouter.get("/auth", authenticateTok, async (req, res) => {
 	}
 });
 
-userRouter.get("/users", authenticateTok, async (_, res) => {
+userRouter.post("/update", valUpdate, async (req, res) => {
+	try {
+		await USER.updateUser(req.tok.id, req.body);
+		res.sendStatus(200);
+	} catch(e:any) {
+		res.status(500).json({error: handleErr(e)});
+	}
+});
+
+userRouter.get("/users", async (_, res) => {
 	try {
 		const users = await USER.getAllUsers();
 		res.json(users);
@@ -64,7 +74,7 @@ userRouter.get("/users", authenticateTok, async (_, res) => {
 	}
 });
 
-userRouter.get("/:uid", authenticateTok, async (req, res) => {
+userRouter.get("/:uid", async (req, res) => {
 	try {
 		const user = await USER.getUser(req.tok.id);
 		res.json(user);
@@ -73,7 +83,7 @@ userRouter.get("/:uid", authenticateTok, async (req, res) => {
 	}
 });
 
-userRouter.get("/search/:exp", authenticateTok, async (req, res) => {
+userRouter.get("/search/:exp", async (req, res) => {
 	try {
 		const users = await USER.searchUsers(req.tok.id, req.params.exp);
 		res.json(users);

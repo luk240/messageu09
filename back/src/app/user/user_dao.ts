@@ -1,6 +1,7 @@
 import { db } from "../../db";
-import bcrypt from "bcrypt"; // Replace with native crypto?
 import { ObjectId } from "mongodb";
+import { hash, unhash } from "../utils/hash";
+
 
 interface IUserDao {
 	regUser(user: model.IUser): Promise<string>;
@@ -12,8 +13,7 @@ class UserDao implements IUserDao {
 	public readonly db = db.collection<model.IUser>("users");
 
 	async regUser(user: model.IUser) {
-		const salt = await bcrypt.genSalt(9);
-		user.password = await bcrypt.hash(user.password, salt);
+		user.password = await hash(user.password);
 		const res = await this.db.insertOne(user);
 
 		console.log(`${user.username} registered: ${res.acknowledged}`);
@@ -23,10 +23,14 @@ class UserDao implements IUserDao {
 
 	async loginUser({cred, password}:{cred: string, password: string,}) {
 		const user = await this.db.findOne({$or: [{"username": cred}, {"email": cred}]});
-		if (user && await bcrypt.compare(password, user.password)) return user;
+		if (user && await unhash(password, user.password)) return user;
 		throw Error("Bad credentials")
 	}
 
+	async updateUser(id:string, body:Object) {
+		const res = await this.db.updateOne({"_id": new ObjectId(id)}, { $set: body });
+		console.log(res);
+	}
 
 	async getUser(id: string) {
 		const result = await this.db.findOne({"_id": new ObjectId(id)});
@@ -36,7 +40,7 @@ class UserDao implements IUserDao {
 
 	async getUserName(id:string) {
 		const user = await this.getUser(id);
-		return user.username;
+		return user.name;
 	}
 
 	async getAllUsers() {

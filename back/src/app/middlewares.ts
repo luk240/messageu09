@@ -4,6 +4,7 @@ import { db } from "../db";
 import jwt from "jsonwebtoken";
 import { getCookies } from "./utils/cookie";
 import handleErr from "./utils/error";
+import { hash } from "./utils/hash";
 
 type M = (...args:[Request, Response, NextFunction]) => void;
 
@@ -125,4 +126,44 @@ const valLogin:M = async (req, res, next) => {
 	}
 }
 
-export {authenticateTok, wsTokAuth, valReg, valLogin, bodyIsString};
+const valUpdate:M = async (req, res, next) => {
+	const table = "users";
+	let {username, name, email, password}:{[k:string]: string} = req.body;
+	req.body = {};
+	try {
+
+		if (username) {
+			username = username.toLowerCase();
+			if (!/^[a-z0-9.-_]{2,50}$/.test(username)) throw "Invalid Username";
+			if (await db.collection(table).findOne({"username": username})) throw "Username already in use";
+			req.body.username = username;
+		}
+
+		if (name) req.body.name = name;
+
+		if (email) {
+			email = email.toLowerCase();
+			if (email && !/^[\w.-]{2,50}@[\w]{1,50}.[a-z]{2,9}$/.test(email)) throw "Invalid Email";
+			if (email && await db.collection(table).findOne({"email": email})) throw "Email already in use";
+			req.body.email = email;
+		}
+
+		if (password) {
+			if (!/^.{6,50}$/.test(password)) {
+				const c = password.length;
+				if (/^.{,5}$/.test(password)) throw `Password length(${c}) too short`;
+				else if (/^.{51,}$/.test(password)) throw `Max Password length is 50, your is ${c}`;
+				else throw "Couldn't verify Password";
+			}
+			req.body.password = await hash(password);
+		}
+
+		if (Object.keys(req.body).length === 0) throw "Nothing to update";
+
+		next();
+	}catch(e) {
+		res.status(400).json({error: handleErr(e)});
+	}
+}
+
+export {authenticateTok, wsTokAuth, valReg, valLogin, bodyIsString, valUpdate};

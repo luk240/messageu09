@@ -37,14 +37,14 @@ class MsgDao implements IMessageDao {
 		for (let m of msgs) {
 			if (!userIds.some(i => JSON.stringify(i) == JSON.stringify(m.user_id)) ) userIds.push(m.user_id);
 		}
-		const users = await USER.db.find({ "_id": {$in: userIds} }, { projection: {"_id": 1, "username": 1} }).toArray();
+		const users = await USER.db.find({ "_id": {$in: userIds} }, { projection: {"_id": 1, "name": 1} }).toArray();
 
 		// Add name & rm uid
 		const namedMsgs:any[] = msgs;
 		for (let m of namedMsgs) {
 			for (let u of users) {
 				if (JSON.stringify(m.user_id) == JSON.stringify(u._id)) {
-					m.name = u.username; delete m.user_id;
+					m.name = u.name; delete m.user_id;
 					break;
 				}
 			}

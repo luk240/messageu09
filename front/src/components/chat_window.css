@@ -52,24 +52,30 @@ main > #mid .msg.o > div {
 	background: #e0fff0;
 }
 main > #bot {
-	margin: 0.5rem 0.5rem 0.3rem 0.5rem;
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	margin: 0.5rem;
 }
 main > #bot img {
-	float: left; /*Amazing!*/
+	align-self: end;
 	margin-right: 0.5rem;
-	z-index: 1;
 	height: 36px;
+	z-index: 1;
 }
 main > #bot > form.input {
 	display: flex;
 	margin: auto;
 	border-radius: 8px;
-	max-width: 320px;
+	max-width: 400px;
+	width: 100%;
 }
-main > #bot > form > input {
-	outline: none; box-shadow: none;
+main > #bot > form > textarea {
+	outline: none; box-shadow: none; resize: none;
+	scrollbar-width: thin;
 	border-radius: 8px 0 0 8px;
 	width: 100%;
+	height: 36px;
+	max-height: 100px;
 }
 main > #bot > form > button {
 	border-radius: 0 8px 8px 0px;

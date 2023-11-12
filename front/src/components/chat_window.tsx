@@ -22,7 +22,7 @@ interface WsSend {
 
 let ws:WebSocket_|null = null;
 const wsHeartbeat = 30000 + 2000; // +delay
-const msgInput:WsSend = {type: "msg"} as WsSend;
+const msgInput:WsSend = {type: "msg", content: ""};
 let shouldScroll = true;
 
 export default function ChatWindow() {
@@ -136,10 +136,12 @@ export default function ChatWindow() {
 
 	function handleForm(e:React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
+		if (/^\s*$/.test(msgInput.content)) return;
+
 		if (ws && ws.readyState === ws.OPEN) {
 			ws.send(JSON.stringify(msgInput));
 			msgInput.content = "";
-			e.currentTarget.querySelector("input")!.value = "";
+			e.currentTarget.querySelector("textarea")!.value = "";
 			return;
 		}
 		alert("Connection not ready");
@@ -187,7 +189,12 @@ export default function ChatWindow() {
 			<div id="bot">
 				<img onClick={tglBar} tabIndex={0} alt="toggle-bar" title="Toggle Bar" src="/icon/bar.svg"/>
 				<form className="input" onSubmit={handleForm}>
-					<input name="msg" type="text" onChange={e => msgInput.content = e.target.value}/>
+					<textarea name="msg" onKeyUp={e => { const t = e.currentTarget;
+						if (!e.shiftKey && e.key == "Enter") t.form!.requestSubmit();
+						msgInput.content = t.value;
+						t.style.height = "36px";
+						t.style.height = `${t.scrollHeight}px`;
+					}}></textarea>
 					<button type="submit">&gt;</button>
 				</form>
 			</div>

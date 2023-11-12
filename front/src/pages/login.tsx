@@ -30,7 +30,7 @@ export default function Login() {
 				</label>
 				<Button type="submit">Login!</Button>
 			</form>
-			<p>Dont have an account? <Link to="/Register">Register.</Link></p>
+			<p>Dont have an account? <Link to="/register">Register.</Link></p>
 			{err && <div className="form-err">
 				{ typeof err == "string" ? <p>{err}</p> : err.length>0 &&
 				err.map((e, idx) => <p key={idx}>{e}</p>) }

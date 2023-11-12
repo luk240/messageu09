@@ -19,6 +19,7 @@ let toId:number;
 export default function Sidebar() {
 	const [shownConvos, setShownConvos] = useState<any[]>([]);
 	const [qUsers, setQUsers] = useState<usrSearch[]>([]);
+	const [qInfo, setQInfo] = useState("");
 
 	function sortUsers(input:string) {
 		if (/[^a-z0-9.-_]/.test(input)) return "Invalid name";
@@ -40,11 +41,23 @@ export default function Sidebar() {
 
 	function searchUsers_(e:React.ChangeEvent<HTMLInputElement>) {
 		clearTimeout(toId);
+		const s = document.getElementById("search-spinner")!;
 		const q = e.target.value;
-		if (!q) setQUsers([]);
+		if (!q) {
+			setQUsers([]); setQInfo("");
+			s.hidden = true;
+			return;
+		}
+		setQInfo(" ");
+		s.hidden = false;
+
 		toId = setTimeout(() => {
-			if (q.length < 2) return "Query too short";
-			searchUsers(q).then(data => setQUsers(data));
+			s.hidden = true;
+			if (q.length === 1) { setQInfo("Type 1 more letter"); return }
+			searchUsers(q).then(data => {
+				if (data.length === 0) {setQInfo("No user with that name"); return}
+				setQUsers(data)
+			});
 		}, 500);
 	}
 
@@ -83,7 +96,7 @@ export default function Sidebar() {
 				<ul>
 				{shownConvos.map(c => (
 					<li key={c.cid}>
-						<NavLink to={`/${c.cid}`}>
+						<NavLink to={`/${c.cid}`} onClick={() => location.hash = "chat"}>
 							<span>{c.name}</span>
 							<span>{c.friend && "F"}</span>
 						</NavLink>
@@ -94,8 +107,8 @@ export default function Sidebar() {
 			}
 			</nav>
 			<div id="manage">
-				<button>Friends</button>
-				<Link to="/profile"><button>Profile</button></Link>
+				<Link tabIndex={-1} to="/friends"><button>Friends</button></Link>
+				<Link tabIndex={-1} to="/profile"><button>Profile</button></Link>
 			</div>
 			<section id="popup">
 				<div>
@@ -112,15 +125,15 @@ export default function Sidebar() {
 					<div id="search-res">
 					{qUsers.map(u => (
 						<div key={u.id}>
-							<p>{u.username}</p>
+							<span>{u.username}</span>
 							<button onClick={() => {convoNew_(u.id); tglPopup()} }>Message</button>
 						</div>
 					))}
 					</div>
 					: (
 						<>
-						<p>Start typing to search</p>
-						<div id="search-spinner" aria-hidden hidden={false}/>
+						<p>{qInfo ? qInfo : "Start typing to search"}</p>
+						<div id="search-spinner" aria-hidden hidden/>
 						</>
 						)
 					}

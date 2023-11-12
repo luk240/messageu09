@@ -28,10 +28,10 @@ let shouldScroll = true;
 export default function ChatWindow() {
 	const user = useContext(UserContext);
 	let [msgLog, setMsgLog] = useState<WsGet[]>([]);
+	const [isOnline, setIsOnline] = useState(false);
 	const divMain = useRef<HTMLDivElement>(null);
 	const getThread = useParams().thread || "";
 	const thread = useRef(getThread);
-	console.log("MSGLOG:", msgLog);
 
 	// Change ws thread
 	if (thread.current !== getThread) {
@@ -64,11 +64,13 @@ export default function ChatWindow() {
 		ws = new WebSocket(import.meta.env._WS + thread.current) as WebSocket_;
 		ws.onopen = () => {
 			console.log("'WS connection open'");
+			setIsOnline(true);
 			heartbeat(false); // Start timeout in case conn drops before first ping(30s)
 			ws!.send('{"type":"sys"}'); // User connected msg
 		}
 		ws.onclose = (e) => {
 			console.log("WS onclose:", e.reason);
+			setIsOnline(false);
 			if (ws) {
 				clearTimeout(ws.pingTimeout);
 				switch(e.reason) {
@@ -144,6 +146,8 @@ export default function ChatWindow() {
 	}
 
 	function tglBar() {
+		if (document.body.scrollLeft) {location.hash = "sidebar"; return;}
+
 		const x = document.getElementById("sidebar")!;
 		if (x.style.display != "none") x.style.display = "none";
 		else x.style.display = "flex";
@@ -165,26 +169,26 @@ export default function ChatWindow() {
 		<main id="chat">
 			<div id="top">
 				<img alt="settings" title="Settings" src="/icon/cog.svg"/>
-				<h1>Chat Room <sup>{` (${false ? "offline" : "online"})`}</sup></h1>
+				<h1>Chat Room {!isOnline && <sup><i>offline</i></sup>}</h1>
 			</div>
 			<div id="mid" ref={divMain}>
-				<p>Messages displays here...</p>
-				<pre id="msg-box">{msgLog.map((m, idx) =>
-				m.type == "msg" ?
-					<p key={idx}>
-						<span>{mdm(new Date(m.time_created!))}</span>&nbsp;
-						<span className={user.name == m.name ? "me" : ""}>{m.name}</span>
-						:&nbsp;{m.content}
-						{user.name == m.name && <span className="rm" onClick={() => msgRm_(m.id!)}>Remove</span>}
-					</p>
+				{msgLog.map((m, idx) => m.type == "msg" ?
+					<div key={idx} className={`msg ${user.name == m.name ? "" : "o"}`}>
+						<p>
+							<span><b>{m.name}</b></span>&nbsp;
+							<sup>({mdm(new Date(m.time_created!))})</sup>
+							{user.name == m.name && <sup className="rm" onClick={() => msgRm_(m.id!)}>Remove</sup>}
+						</p>
+						<div>{m.content}</div>
+					</div>
 				:	<p key={idx}><i>* {m.content}</i></p>
-				)}</pre>
+				)}
 			</div>
 			<div id="bot">
 				<img onClick={tglBar} tabIndex={0} alt="toggle-bar" title="Toggle Bar" src="/icon/bar.svg"/>
-				<form onSubmit={handleForm}>
+				<form className="input" onSubmit={handleForm}>
 					<input name="msg" type="text" onChange={e => msgInput.content = e.target.value}/>
-					<button type="submit">{"->"}</button>
+					<button type="submit">&gt;</button>
 				</form>
 			</div>
 		</main>

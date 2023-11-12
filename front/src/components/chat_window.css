@@ -15,41 +15,69 @@ main > #top {
 	max-width: 30px;
 	position: absolute;
 	left: 0;
-	text-shadow: 2px 2px red;
 }
 main > #mid {
 	justify-self: end;
 	flex-grow: 1;
 	flex-shrink: 1;
 	margin: 0 0.5rem;
-	overflow-y: scroll;
-}
-main > #mid pre {
-	white-space: pre-wrap;
+	overflow-y: auto;
 	overflow-wrap: anywhere;
+	scrollbar-width: thin;
 }
-main > #mid pre p{
+main > #mid > p {text-align: center;}
+main > #mid .msg {
+	margin: 1rem 0;
+}
+main > #mid .msg > p {position: relative;}
+main > #mid .msg.o > p {text-align: right;}
+main > #mid .msg sup.rm {
 	position: relative;
-}
-main > #mid pre p span.me{
-	font-weight: bold;
-}
-main > #mid pre p span.rm{
 	display: none;
-	position: absolute;
-	right:10px;
+	left: 10px;
 	cursor: pointer;
 	color: crimson;
 }
-main > #mid pre p:hover span.rm {display: inline}
+main > #mid .msg p:hover sup.rm {display: inline}
+main > #mid .msg > div {
+	margin-top: 0.2rem;
+	white-space: pre-wrap;
+	padding: 0.1rem 0.5rem 0.2rem 0.5rem;
+	width: fit-content;
+	border-radius: 4px;
+	background: #f6f6ff;
+}
+main > #mid .msg.o > div {
+	margin-left: auto;
+	background: #e0fff0;
+}
 main > #bot {
-	position: relative;
 	margin: 0.5rem 0.5rem 0.3rem 0.5rem;
 }
 main > #bot img {
-	position: absolute;
-	bottom: 0;
+	float: left; /*Amazing!*/
+	margin-right: 0.5rem;
 	z-index: 1;
-	max-height: 40px;
+	height: 36px;
 }
-main > #bot > form {text-align: center;}
+main > #bot > form.input {
+	display: flex;
+	margin: auto;
+	border-radius: 8px;
+	max-width: 320px;
+}
+main > #bot > form > input {
+	outline: none; box-shadow: none;
+	border-radius: 8px 0 0 8px;
+	width: 100%;
+}
+main > #bot > form > button {
+	border-radius: 0 8px 8px 0px;
+	background: #978bc2;
+	font-weight: bold;
+	color: white;
+}
+main > #bot > form > button:active {
+	transform: none;
+	color: black;
+}

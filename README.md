@@ -49,7 +49,7 @@ Thats it! Open http://localhost:5000 and you should see a message.
 
 ## Deploy steps
 
-Follow the [Local installation](#instl), but instead use `npm install --production` and update .env to match your needs.
+Follow the [Local installation](#local-installation), but instead use `npm install --production` and update .env to match your needs.
 
 ## Routes
 ``````
@@ -66,3 +66,7 @@ POST   "/convo/new"
 DELETE "/msg/"
 GET    "/msg/c/<cid>"
 ``````
+----
+
+Live frontend: https://medis.ddns.net/message/  
+Live backend: https://medis.ddns.net/message/api/

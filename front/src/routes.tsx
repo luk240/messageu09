@@ -3,6 +3,7 @@ import Err from "./pages/err";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Profile from "./pages/profile";
+import Admin from "./pages/admin";
 import Index from "./pages";
 
 import { createBrowserRouter, RouterProvider, } from "react-router-dom";
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
 			{
 				path: "friends",
 				element: <p>F</p>,
+			},
+			{
+				path: "admin",
+				element: <Admin/>,
 			}
 		]
 	},

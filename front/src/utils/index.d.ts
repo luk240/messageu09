@@ -4,4 +4,5 @@ export interface IUser {
 	email: string;
 	friends: string[];
 	convos: string[];
+	admin: number;
 }

@@ -83,6 +83,15 @@ userRouter.get("/:uid", async (req, res) => {
 	}
 });
 
+userRouter.delete("/:uid", async (req, res) => {
+	try {
+		await USER.rmUser(req.body.id);
+		res.sendStatus(200);
+	} catch(e:any) {
+		res.status(500).json({error: handleErr(e)});
+	}
+});
+
 userRouter.get("/search/:exp", async (req, res) => {
 	try {
 		const users = await USER.searchUsers(req.tok.id, req.params.exp);

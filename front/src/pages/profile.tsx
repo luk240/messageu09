@@ -28,6 +28,7 @@ export default function Profile() {
 	return (<>
 		<header>
 			<Link to="/">Back</Link>
+			{user.admin === 1 && <Link to="/admin">Admin</Link>}
 			<button onClick={logout_}>Logout</button>
 		</header>
 		<div id="profile">

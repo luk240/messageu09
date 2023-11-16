@@ -60,6 +60,7 @@ GET    "/user/logout"
 GET    "/user/auth"
 GET    "/user/users"
 GET    "/user/<uid>"
+DELETE "/user/<uid>"
 GET    "/user/<name>"
 GET    "/convo/get"
 POST   "/convo/new"
@@ -70,3 +71,5 @@ GET    "/msg/c/<cid>"
 
 Live frontend: https://medis.ddns.net/message/  
 Live backend: https://medis.ddns.net/message/api/
+
+Note that admin functionality is limited to localhost. The deployed app is being used today and I dont feel safe having that open to the internet.

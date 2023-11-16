@@ -49,6 +49,11 @@ class UserDao implements IUserDao {
 		return users;
 	}
 
+	async rmUser(id:string) {
+		this.db.deleteOne({_id: ObjectId(id)});
+		return "User was removed";
+	}
+
 	async searchUsers(id:string, exp:string) {
 		if (/[^a-z0-9.-_]/.test(exp) || exp.length < 2) throw Error("Invalid expression");
 		exp.replace(/\./g, "\\.");

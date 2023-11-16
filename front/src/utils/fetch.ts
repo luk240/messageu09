@@ -48,6 +48,21 @@ export async function getUsers() {
 	}
 }
 
+export async function rmUser(id:string) {
+	console.log("rmUser");
+	try {
+		const res = await fetch(url+"user/" + id, {
+			method: "DELETE",
+			mode: "cors",
+			credentials: "include"
+		});
+		const data = await res.json();
+		return data;
+	}catch(e) {
+		console.log(e);
+	}
+}
+
 export async function searchUsers(q:string) {
 	console.log("searchUsers");
 	try {
